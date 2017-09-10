@@ -5,10 +5,10 @@
 #ini_set('error_reporting', E_ALL);
 
 // set your google email-address daily reports to send to
-$user_set_array['email_address'] = 'tommuccc@gmail.com';
+$user_set_array['email_address'] = 'YOUR_EMAIL@gmail.com';
 
 // set path to aircraft.json file
-$user_set_array['url_json'] = 'http://192.168.143.10/dump1090/data/aircraft.json';
+$user_set_array['url_json'] = 'http://127.0.0.1/dump1090/data/aircraft.json';
 
 // set the absolute limit of alert-messages default is 500 this script is allowed to send over its whole runtime
 $user_set_array['mailer_limit'] = 500;
