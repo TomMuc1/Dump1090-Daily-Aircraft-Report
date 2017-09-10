@@ -47,7 +47,7 @@ while (true) {
 	// loop through aircraft.json file
 	foreach ($json_data_array['aircraft'] as $row) {
 		isset($row['hex']) ? $ac_hex = $row['hex'] : $ac_hex = '';
-		if ($ac_hex != '' and strpos($ac_hex, '~') > -1 and $ac_hex != '000000') {
+		if ($ac_hex != '' && strpos($ac_hex, '~') === false && $ac_hex != '000000') {
 			@$hex_array[$ac_hex] ++;
 			$last_run = time() - strtotime('today');
 		}
