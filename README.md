@@ -1,6 +1,6 @@
-# Dump1090-Daily-Aircraft-Counter
+# Dump1090-Daily-Aircraft-Report
 
-short script that counts daily aircrafts reported from dump1090 and sends auto-email every day.
+short script that daily reports aircrafts from dump1090 and sends auto-email every day.
 
 php-install - if not already installed:    
 
