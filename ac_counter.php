@@ -65,7 +65,7 @@ while (true) {
 		isset($row['lat']) ? $ac_lat = $row['lat'] : $ac_lat = '';
 		isset($row['lon']) ? $ac_lon = $row['lon'] : $ac_lon = '';
 		isset($row['seen']) ? $ac_seen = $row['seen'] : $ac_seen = '';
-		if ($ac_hex != '' && strpos($ac_hex, '~') === false && $ac_hex != '000000' && ($ac_seen != '' && $ac_seen < 1.2)) {
+		if ($ac_hex != '' && $ac_hex != '000000' && ($ac_seen != '' && $ac_seen < 1.2)) {
 			isset($csv_array[$ac_hex]['hex']) ? $csv_array[$ac_hex]['hex'] = $ac_hex : $csv_array[$ac_hex]['hex'] = '';
 			isset($csv_array[$ac_hex]['msg']) ? $csv_array[$ac_hex]['msg']++ : $csv_array[$ac_hex]['msg'] = 0;
 			$ac_flight != '' ? $csv_array[$ac_hex]['flight'] = $ac_flight : $csv_array[$ac_hex]['flight'] = '';
