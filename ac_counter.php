@@ -40,7 +40,7 @@ while (true) {
 			$body = '--' . $boundary . PHP_EOL;
 			$body .= 'Content-type:text/plain; charset=iso-8859-1' . PHP_EOL;
 			$body .= 'Content-Transfer-Encoding: 7bit' . PHP_EOL . PHP_EOL;
-			$body .= '*** ' . count($csv_array) . ' Aircrafts Yesterday UTC @ ' . array_sum(array_column($csv_array, 'msg')) . ' Messages Overall ***' . PHP_EOL . PHP_EOL;
+			$body .= number_format(count($csv_array), 0, ',', '.') . ' Aircrafts @ ' . number_format(array_sum(array_column($csv_array, 'msg')), 0, ',', '.') . ' Messages - Yesterday UTC' . PHP_EOL . PHP_EOL;
 			$body .= '--' . $boundary . PHP_EOL;
 			$body .= 'Content-Type: application/octet-stream; name="aircrafts.xls"' . PHP_EOL;
 			$body .= 'Content-Transfer-Encoding: base64' . PHP_EOL;
