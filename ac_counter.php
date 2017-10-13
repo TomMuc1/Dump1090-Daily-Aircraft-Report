@@ -47,7 +47,7 @@ while (true) {
 			$body .= 'Content-Disposition: attachment; filename="aircrafts.xls"' . PHP_EOL . PHP_EOL;
 			$body .= chunk_split(base64_encode($csv)) . PHP_EOL . PHP_EOL;
 			$body .= '--' . $boundary . '--';
-			mail($user_set_array['email_address'], 'Your Daily Aircraft Stats', $body, $header);
+			mail($user_set_array['email_address'], 'Daily Aircraft Stats', $body, $header);
 		}
 		$csv_array = array();
 		$sent_messages++;
