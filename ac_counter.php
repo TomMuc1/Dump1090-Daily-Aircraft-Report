@@ -25,14 +25,14 @@ while (true) {
 
 	$start_loop_microtime = microtime(true);
 
-    // at midnight generate csv-file and submit email
-    if ($seconds_of_day > time() - strtotime('today')) {
+	// at midnight generate csv-file and submit email
+	if ($seconds_of_day > time() - strtotime('today')) {
 		if ($sent_messages < $user_set_array['mailer_limit']) {
-		    $csv = '';
-            $csv .= $csv_header;
-            foreach ($csv_array as $key => $value) {
-                $csv .= "\"\t" . implode("\"\t\"", str_replace('.', ',', $value)) . "\"" . PHP_EOL;
-            }
+			$csv = '';
+			$csv .= $csv_header;
+			foreach ($csv_array as $key => $value) {
+				$csv .= "\"\t" . implode("\"\t\"", str_replace('.', ',', $value)) . "\"" . PHP_EOL;
+			}
 			$boundary = str_replace(' ', '.', microtime());
 			$header = 'From: ' . $user_set_array['email_address'] . PHP_EOL;
 			$header .= 'Reply-To: ' . $user_set_array['email_address'] . PHP_EOL;
@@ -67,17 +67,17 @@ while (true) {
 		isset($row['lon']) ? $ac_lon = $row['lon'] : $ac_lon = '';
 		isset($row['seen']) ? $ac_seen = $row['seen'] : $ac_seen = '';
 		if ($ac_hex != '' && $ac_hex != '000000' && ($ac_seen != '' && $ac_seen < 1.2)) {
-		    $csv_array[$ac_hex]['hex'] = $ac_hex;
-		    $csv_array[$ac_hex]['msg'] = isset($csv_array[$ac_hex]['msg']) + 1;
+			$csv_array[$ac_hex]['hex'] = $ac_hex;
+			$csv_array[$ac_hex]['msg'] = isset($csv_array[$ac_hex]['msg']) + 1;
 			$ac_flight != '' ? $csv_array[$ac_hex]['flight'] = $ac_flight : $csv_array[$ac_hex]['flight'] = '';
-            if (!isset($csv_array[$ac_hex]['f_see']) || $csv_array[$ac_hex]['f_see'] == '') $csv_array[$ac_hex]['f_see'] = $ac_now;
-            if (!isset($csv_array[$ac_hex]['f_lat']) || $csv_array[$ac_hex]['f_lat'] == '') $csv_array[$ac_hex]['f_lat'] = $ac_lat;
-            if (!isset($csv_array[$ac_hex]['f_lon']) || $csv_array[$ac_hex]['f_lon'] == '') $csv_array[$ac_hex]['f_lon'] = $ac_lon;
-            if (!isset($csv_array[$ac_hex]['f_alt']) || $csv_array[$ac_hex]['f_alt'] == '') $csv_array[$ac_hex]['f_alt'] = $ac_altitude;
-            $ac_now != '' ? $csv_array[$ac_hex]['l_see'] = $ac_now : $csv_array[$ac_hex]['l_see'] = '';
-            $ac_lat != '' ? $csv_array[$ac_hex]['l_lat'] = $ac_lat : $csv_array[$ac_hex]['l_lat'] = '';
-            $ac_lon != '' ? $csv_array[$ac_hex]['l_lon'] = $ac_lon : $csv_array[$ac_hex]['l_lon'] = '';
-            $ac_altitude != '' ? $csv_array[$ac_hex]['l_alt'] = $ac_altitude : $csv_array[$ac_hex]['l_alt'] = '';
+			if (!isset($csv_array[$ac_hex]['f_see']) || $csv_array[$ac_hex]['f_see'] == '') $csv_array[$ac_hex]['f_see'] = $ac_now;
+			if (!isset($csv_array[$ac_hex]['f_lat']) || $csv_array[$ac_hex]['f_lat'] == '') $csv_array[$ac_hex]['f_lat'] = $ac_lat;
+			if (!isset($csv_array[$ac_hex]['f_lon']) || $csv_array[$ac_hex]['f_lon'] == '') $csv_array[$ac_hex]['f_lon'] = $ac_lon;
+			if (!isset($csv_array[$ac_hex]['f_alt']) || $csv_array[$ac_hex]['f_alt'] == '') $csv_array[$ac_hex]['f_alt'] = $ac_altitude;
+			$ac_now != '' ? $csv_array[$ac_hex]['l_see'] = $ac_now : $csv_array[$ac_hex]['l_see'] = '';
+			$ac_lat != '' ? $csv_array[$ac_hex]['l_lat'] = $ac_lat : $csv_array[$ac_hex]['l_lat'] = '';
+			$ac_lon != '' ? $csv_array[$ac_hex]['l_lon'] = $ac_lon : $csv_array[$ac_hex]['l_lon'] = '';
+			$ac_altitude != '' ? $csv_array[$ac_hex]['l_alt'] = $ac_altitude : $csv_array[$ac_hex]['l_alt'] = '';
 			$last_run = time() - strtotime('today');
 		}
 	}
