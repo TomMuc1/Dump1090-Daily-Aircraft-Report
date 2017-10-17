@@ -31,7 +31,7 @@ while (true) {
 			$csv = '';
 			$csv .= $csv_header;
 			foreach ($csv_array as $key => $value) {
-				$csv .= "\"\t" . implode("\"\t\"", str_replace('.', ',', $value)) . "\"" . PHP_EOL;
+				$csv .= "\"\t\0" . implode("\"\t\"", str_replace('.', ',', $value)) . "\"" . PHP_EOL;
 			}
 			$boundary = str_replace(' ', '.', microtime());
 			$header = 'From: ' . $user_set_array['email_address'] . PHP_EOL;
