@@ -68,17 +68,23 @@ while (true) {
 		isset($row['seen']) ? $ac_seen = $row['seen'] : $ac_seen = '';
 		if ($ac_hex != '' && $ac_hex != '000000' && ($ac_seen != '' && $ac_seen < 1.2)) {
 			$csv_array[$ac_hex]['hex'] = $ac_hex;
-			isset($csv_array[$ac_hex]['msg']) ? $csv_array[$ac_hex]['msg']++ : $csv_array[$ac_hex]['msg'] = 0;
-			$ac_flight != '' ? $csv_array[$ac_hex]['flight'] = $ac_flight : $csv_array[$ac_hex]['flight'] = '';
+			isset($csv_array[$ac_hex]['msg']) ? $csv_array[$ac_hex]['msg']++ : $csv_array[$ac_hex]['msg'] = 1;
+			if (!isset($csv_array[$ac_hex]['flight']) && $ac_flight == '') { $csv_array[$ac_hex]['flight'] = ''; }
+			else if ($ac_flight != '') { $csv_array[$ac_hex]['flight'] = $ac_flight; }
 			if (!isset($csv_array[$ac_hex]['f_see']) || $csv_array[$ac_hex]['f_see'] == '') $csv_array[$ac_hex]['f_see'] = $ac_now;
 			if (!isset($csv_array[$ac_hex]['f_lat']) || $csv_array[$ac_hex]['f_lat'] == '') $csv_array[$ac_hex]['f_lat'] = $ac_lat;
 			if (!isset($csv_array[$ac_hex]['f_lon']) || $csv_array[$ac_hex]['f_lon'] == '') $csv_array[$ac_hex]['f_lon'] = $ac_lon;
 			if (!isset($csv_array[$ac_hex]['f_alt']) || $csv_array[$ac_hex]['f_alt'] == '') $csv_array[$ac_hex]['f_alt'] = $ac_altitude;
-			$ac_now != '' ? $csv_array[$ac_hex]['l_see'] = $ac_now : $csv_array[$ac_hex]['l_see'] = '';
-			$ac_lat != '' ? $csv_array[$ac_hex]['l_lat'] = $ac_lat : $csv_array[$ac_hex]['l_lat'] = '';
-			$ac_lon != '' ? $csv_array[$ac_hex]['l_lon'] = $ac_lon : $csv_array[$ac_hex]['l_lon'] = '';
-			$ac_altitude != '' ? $csv_array[$ac_hex]['l_alt'] = $ac_altitude : $csv_array[$ac_hex]['l_alt'] = '';
+			if (!isset($csv_array[$ac_hex]['l_see']) && $ac_now == '') { $csv_array[$ac_hex]['l_see'] = ''; }
+			else if ($ac_now != '') { $csv_array[$ac_hex]['l_see'] = $ac_now; }
+			if (!isset($csv_array[$ac_hex]['l_lat']) && $ac_lat == '') { $csv_array[$ac_hex]['l_lat'] = ''; }
+			else if ($ac_lat != '') { $csv_array[$ac_hex]['l_lat'] = $ac_lat; }
+			if (!isset($csv_array[$ac_hex]['l_lon']) && $ac_lon == '') { $csv_array[$ac_hex]['l_lon'] = ''; }
+			else if ($ac_lon != '') { $csv_array[$ac_hex]['l_lon'] = $ac_lon; }
+			if (!isset($csv_array[$ac_hex]['l_alt']) && $ac_altitude == '') { $csv_array[$ac_hex]['l_alt'] = ''; }
+			else if ($ac_altitude != '') { $csv_array[$ac_hex]['l_alt'] = $ac_altitude; }
 			$last_run = time() - strtotime('today');
+
 		}
 	}
 	$seconds_of_day = time() - strtotime('today');
