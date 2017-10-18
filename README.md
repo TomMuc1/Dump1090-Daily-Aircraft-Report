@@ -2,7 +2,7 @@
 
 short script that daily reports aircrafts from dump1090 and sends auto-email every day.
 
-
+![Alt text](screen.png?raw=true "Sample Report")
 
 php-install - if not already installed:    
 
