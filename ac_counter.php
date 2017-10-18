@@ -19,7 +19,7 @@ $hex_array = array();
 $start_time = time();
 date_default_timezone_set('UTC');
 $seconds_of_day = time() - strtotime('today');
-$csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" . '"First Seen"' . "\t" . '"First Latitude"' . "\t" . '"First Longitude"' . "\t" . '"First Altitude"' . "\t" . '"Last Seen"' . "\t" . '"Last Latitude"' . "\t" . '"Last Longitude"' . "\t" . '"Last Altitude"' . PHP_EOL . PHP_EOL;
+$csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" . '"Category"' . "\t" . '"Squawk"' . "\t" . '"Set First"' . "\t" . '"First Seen"' . "\t" . '"First Latitude"' . "\t" . '"First Longitude"' . "\t" . '"First Altitude"' . "\t" . '"Set Last"'. "\t" . '"Last Seen"' . "\t" . '"Last Latitude"' . "\t" . '"Last Longitude"' . "\t" . '"Last Altitude"' . "\t" . '"Mlat"' . PHP_EOL . PHP_EOL;
 
 while (true) {
 
@@ -58,23 +58,34 @@ while (true) {
 	$json_data_array = json_decode(file_get_contents($user_set_array['url_json']),true);
 	isset($json_data_array['now']) ? $ac_now = date("Y-m-d G:i:s l", $json_data_array['now']) : $ac_now = '';
 
-	// loop through aircraft section of aircraft.json file
+	// loop through aircraft section of aircraft.json file and generate csv_array that holds the data of whole day
 	foreach ($json_data_array['aircraft'] as $row) {
 		isset($row['hex']) ? $ac_hex = $row['hex'] : $ac_hex = '';
 		isset($row['flight']) ? $ac_flight = trim($row['flight']) : $ac_flight = '';
+		isset($row['category']) ? $ac_category = $row['category'] : $ac_category = '';
+		isset($row['squawk']) ? $ac_squawk = $row['squawk'] : $ac_squawk = '';
 		isset($row['altitude']) ? $ac_altitude = $row['altitude'] : $ac_altitude = '';
 		isset($row['lat']) ? $ac_lat = $row['lat'] : $ac_lat = '';
 		isset($row['lon']) ? $ac_lon = $row['lon'] : $ac_lon = '';
 		isset($row['seen']) ? $ac_seen = $row['seen'] : $ac_seen = '';
+		isset($row['mlat']) ? $ac_mlat = implode(' ', $row['mlat']) : $ac_mlat = '';
 		if ($ac_hex != '' && $ac_hex != '000000' && ($ac_seen != '' && $ac_seen < 1.2)) {
 			$csv_array[$ac_hex]['hex'] = $ac_hex;
 			isset($csv_array[$ac_hex]['msg']) ? $csv_array[$ac_hex]['msg']++ : $csv_array[$ac_hex]['msg'] = 1;
 			if (!isset($csv_array[$ac_hex]['flight']) && $ac_flight == '') { $csv_array[$ac_hex]['flight'] = ''; }
 			else if ($ac_flight != '') { $csv_array[$ac_hex]['flight'] = $ac_flight; }
+			if (!isset($csv_array[$ac_hex]['category']) && $ac_category == '') { $csv_array[$ac_hex]['category'] = ''; }
+			else if ($ac_category != '') { $csv_array[$ac_hex]['category'] = $ac_category; }
+			if (!isset($csv_array[$ac_hex]['squawk']) && $ac_squawk == '') { $csv_array[$ac_hex]['squawk'] = ''; }
+			else if ($ac_squawk != '') { $csv_array[$ac_hex]['squawk'] = $ac_squawk; }
+			if ((!isset($csv_array[$ac_hex]['f_see']) && !isset($csv_array[$ac_hex]['f_lat']) && !isset($csv_array[$ac_hex]['f_lon']) && !isset($csv_array[$ac_hex]['f_alt'])) && ($ac_now != '' && $ac_lat != '' && $ac_lon != '' && $ac_altitude != '')) { $csv_array[$ac_hex]['f_set'] = 'set'; }
+			else if (!isset($csv_array[$ac_hex]['f_set'])) { $csv_array[$ac_hex]['f_set'] = ''; }
 			if (!isset($csv_array[$ac_hex]['f_see']) || $csv_array[$ac_hex]['f_see'] == '') $csv_array[$ac_hex]['f_see'] = $ac_now;
 			if (!isset($csv_array[$ac_hex]['f_lat']) || $csv_array[$ac_hex]['f_lat'] == '') $csv_array[$ac_hex]['f_lat'] = $ac_lat;
 			if (!isset($csv_array[$ac_hex]['f_lon']) || $csv_array[$ac_hex]['f_lon'] == '') $csv_array[$ac_hex]['f_lon'] = $ac_lon;
 			if (!isset($csv_array[$ac_hex]['f_alt']) || $csv_array[$ac_hex]['f_alt'] == '') $csv_array[$ac_hex]['f_alt'] = $ac_altitude;
+			if ($ac_now != '' && $ac_lat != '' && $ac_lon != '' && $ac_altitude != '') { $csv_array[$ac_hex]['l_set'] = 'set'; }
+			else { $csv_array[$ac_hex]['l_set'] = ''; }
 			if (!isset($csv_array[$ac_hex]['l_see']) && $ac_now == '') { $csv_array[$ac_hex]['l_see'] = ''; }
 			else if ($ac_now != '') { $csv_array[$ac_hex]['l_see'] = $ac_now; }
 			if (!isset($csv_array[$ac_hex]['l_lat']) && $ac_lat == '') { $csv_array[$ac_hex]['l_lat'] = ''; }
@@ -83,6 +94,8 @@ while (true) {
 			else if ($ac_lon != '') { $csv_array[$ac_hex]['l_lon'] = $ac_lon; }
 			if (!isset($csv_array[$ac_hex]['l_alt']) && $ac_altitude == '') { $csv_array[$ac_hex]['l_alt'] = ''; }
 			else if ($ac_altitude != '') { $csv_array[$ac_hex]['l_alt'] = $ac_altitude; }
+			if (!isset($csv_array[$ac_hex]['mlat']) && $ac_mlat == '') { $csv_array[$ac_hex]['mlat'] = ''; }
+			else if ($ac_mlat != '') { $csv_array[$ac_hex]['mlat'] = 'mlat'; }
 			$last_run = time() - strtotime('today');
 		}
 	}
