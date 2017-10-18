@@ -84,7 +84,6 @@ while (true) {
 			if (!isset($csv_array[$ac_hex]['l_alt']) && $ac_altitude == '') { $csv_array[$ac_hex]['l_alt'] = ''; }
 			else if ($ac_altitude != '') { $csv_array[$ac_hex]['l_alt'] = $ac_altitude; }
 			$last_run = time() - strtotime('today');
-
 		}
 	}
 	$seconds_of_day = time() - strtotime('today');
