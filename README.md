@@ -11,6 +11,7 @@ given raspbian jessie or stretch install with dump1090
 sudo apt-get update
 
 install sendmail:
+
 sudo apt-get install sendmail
 
 php install - raspbian jessie only:
