@@ -4,13 +4,19 @@
 #var_dump(ini_get_all());
 #ini_set('error_reporting', E_ALL);
 
-// set your google email-address daily reports to send to
-$user_set_array['email_address'] = 'YOUR_EMAIL@gmail.com';
-
 // set path to aircraft.json file
 $user_set_array['url_json'] = 'http://127.0.0.1/dump1090/data/aircraft.json';
 
-// set the absolute limit of alert-messages default is 500 this script is allowed to send over its whole runtime
+// set email and/or logfile option to true or false
+$user_set_array['email'] = 'true';    $user_set_array['log'] = 'true';
+
+// set path to directory where log files to store to
+$user_set_array['log_directory'] = '/home/pi/ac_counter_log';
+
+// set your google email-address daily reports to send to
+$user_set_array['email_address'] = 'YOUR_EMAIL@gmail.com';
+
+// set the absolute limit of alert-messages default is 500
 $user_set_array['mailer_limit'] = 500;
 
 $i = 0;
@@ -25,14 +31,14 @@ while (true) {
 
 	$start_loop_microtime = microtime(true);
 
-	// at midnight generate csv-file and submit email
+	// at midnight generate csv-file and submit email and/or write log-file
 	if ($seconds_of_day > time() - strtotime('today')) {
-		if ($sent_messages < $user_set_array['mailer_limit']) {
-			$csv = '';
-			$csv .= $csv_header;
-			foreach ($csv_array as $key => $value) {
-				$csv .= "\"\t\0" . implode("\"\t\"", str_replace('.', ',', $value)) . "\"" . PHP_EOL;
-			}
+		$csv = '';
+		$csv .= $csv_header;
+		foreach ($csv_array as $key => $value) {
+			$csv .= "\"\t\0" . implode("\"\t\"", str_replace('.', ',', $value)) . "\"" . PHP_EOL;
+		}
+		if ($user_set_array['email'] == true && $sent_messages < $user_set_array['mailer_limit']) {
 			$boundary = str_replace(' ', '.', microtime());
 			$header = 'From: ' . $user_set_array['email_address'] . PHP_EOL;
 			$header .= 'Reply-To: ' . $user_set_array['email_address'] . PHP_EOL;
@@ -49,6 +55,12 @@ while (true) {
 			$body .= chunk_split(base64_encode($csv)) . PHP_EOL . PHP_EOL;
 			$body .= '--' . $boundary . '--';
 			mail($user_set_array['email_address'], 'Daily Aircraft Stats', $body, $header);
+		}
+		if ($user_set_array['log'] == true) {
+			$file_to_write = gzencode($csv);
+			$file_name_to_write = $user_set_array['log_directory'] . '/' . 'ac_' . date('Y_m_d_i') . '.xls.zip';
+			if (!file_exists($user_set_array['log_directory'])) mkdir($user_set_array['log_directory'], 0755, true);
+			file_put_contents($file_name_to_write, $file_to_write, LOCK_EX);
 		}
 		$csv_array = array();
 		$sent_messages++;
