@@ -58,7 +58,7 @@ while (true) {
 		}
 		if ($user_set_array['log'] == true) {
 			$file_to_write = gzencode($csv);
-			$file_name_to_write = $user_set_array['log_directory'] . '/' . 'ac_' . date('Y_m_d') . '.xls.zip';
+			$file_name_to_write = $user_set_array['log_directory'] . '/' . 'ac_' . date('Y_m_d', time() - 86400) . '.xls.zip';
 			if (!file_exists($user_set_array['log_directory'])) mkdir($user_set_array['log_directory'], 0755, true);
 			file_put_contents($file_name_to_write, $file_to_write, LOCK_EX);
 		}
