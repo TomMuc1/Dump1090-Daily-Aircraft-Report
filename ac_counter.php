@@ -5,7 +5,7 @@
 #ini_set('error_reporting', E_ALL);
 
 // set path to aircraft.json file
-$user_set_array['url_json'] = 'http://127.0.0.1/dump1090/data/aircraft.json';
+$user_set_array['url_json'] = 'http://127.0.0.1/dump1090/data/';
 
 // set email and/or logfile option to true or false
 $user_set_array['email'] = 'false';    $user_set_array['log'] = 'true';
@@ -19,8 +19,21 @@ $user_set_array['email_address'] = 'YOUR_EMAIL@gmail.com';
 // set the absolute limit of alert-messages default is 500
 $user_set_array['mailer_limit'] = 500;
 
+// set to true for units metric instead nautical
+$user_set_array['metric'] = false;
+
 // set only to true for script function test run -> will 3 times email/log after about 10/20/30 minutes
 $user_set_array['test_mode'] = false;
+
+
+
+function func_harvesine($lat_from, $lon_from, $lat_to, $lon_to, $earth_radius) {
+	$delta_lat = deg2rad($lat_to - $lat_from);
+	$delta_lon = deg2rad($lon_to - $lon_from);
+	$a = sin($delta_lat / 2) * sin($delta_lat / 2) + cos(deg2rad($lat_from)) * cos(deg2rad($lat_to)) * sin($delta_lon / 2) * sin($delta_lon / 2);
+	$c = 2 * atan2(sqrt($a), sqrt(1-$a));
+	return $earth_radius * $c;
+}
 
 $i = 0;
 $sent_messages = 0;
@@ -28,7 +41,11 @@ $hex_array = array();
 $start_time = time();
 date_default_timezone_set('UTC');
 $seconds_of_day = time() - strtotime('today');
-$csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" . '"Category"' . "\t" . '"Squawk"' . "\t" . '"First Seen"' . "\t" . '"First Latitude"' . "\t" . '"First Longitude"' . "\t" . '"First Altitude"' . "\t" . '"Last Seen"' . "\t" . '"Last Latitude"' . "\t" . '"Last Longitude"' . "\t" . '"Last Altitude"' . "\t" . '"Low Rssi"' . "\t" . '"High Rssi"' . "\t" . '"Mlat"' . PHP_EOL . PHP_EOL;
+$user_set_array['metric'] ? $earth_radius = 6371 : $earth_radius = 3440;
+$json_receiver_location = json_decode(file_get_contents($user_set_array['url_json'] . 'receiver.json'),true);
+isset($json_receiver_location['lat']) ? $rec_lat = $json_receiver_location['lat'] : $rec_lat = 0;
+isset($json_receiver_location['lon']) ? $rec_lon = $json_receiver_location['lon'] : $rec_lon = 0;
+$csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" . '"Category"' . "\t" . '"Squawk"' . "\t" . '"First Seen"' . "\t" . '"First Latitude"' . "\t" . '"First Longitude"' . "\t" . '"First Altitude"' . "\t" . '"Last Seen"' . "\t" . '"Last Latitude"' . "\t" . '"Last Longitude"' . "\t" . '"Last Altitude"' . "\t" . '"Low Dist"' . "\t" . '"High Dist"' . "\t" . '"Low Rssi"' . "\t" . '"High Rssi"' . "\t" . '"Mlat"' . PHP_EOL . PHP_EOL;
 
 while (true) {
 
@@ -70,7 +87,7 @@ while (true) {
 	}
 
 	// fetch aircraft.json and read timestamp
-	$json_data_array = json_decode(file_get_contents($user_set_array['url_json']),true);
+	$json_data_array = json_decode(file_get_contents($user_set_array['url_json'] . 'aircraft.json'),true);
 	isset($json_data_array['now']) ? $ac_now = date("Y-m-d G:i:s l", $json_data_array['now']) : $ac_now = '';
 
 	// loop through aircraft section of aircraft.json file and generate csv_array that holds the data of whole day
@@ -106,6 +123,11 @@ while (true) {
 			else if ($ac_lon != '') { $csv_array[$ac_hex]['l_lon'] = $ac_lon; }
 			if (!isset($csv_array[$ac_hex]['l_alt']) && $ac_altitude == '') { $csv_array[$ac_hex]['l_alt'] = ''; }
 			else if ($ac_altitude != '') { $csv_array[$ac_hex]['l_alt'] = $ac_altitude; }
+			$ac_lat && $ac_lon ? $ac_dist = round(func_harvesine($rec_lat, $rec_lon, $ac_lat, $ac_lon, $earth_radius), 1) : $ac_dist = '';
+			if (!isset($csv_array[$ac_hex]['l_dist'])) { $csv_array[$ac_hex]['l_dist'] = $ac_dist; }
+			else if ($ac_dist != '' && $csv_array[$ac_hex]['l_dist'] > $ac_dist) { $csv_array[$ac_hex]['l_dist'] = $ac_dist; }
+			if (!isset($csv_array[$ac_hex]['h_dist'])) { $csv_array[$ac_hex]['h_dist'] = $ac_dist; }
+			else if ($ac_dist != '' && $csv_array[$ac_hex]['h_dist'] < $ac_dist) { $csv_array[$ac_hex]['h_dist'] = $ac_dist; }
 			if (!isset($csv_array[$ac_hex]['l_rssi'])) { $csv_array[$ac_hex]['l_rssi'] = $ac_rssi; }
 			else if ($ac_rssi != '' && $csv_array[$ac_hex]['l_rssi'] > $ac_rssi) { $csv_array[$ac_hex]['l_rssi'] = $ac_rssi; }
 			if (!isset($csv_array[$ac_hex]['h_rssi'])) { $csv_array[$ac_hex]['h_rssi'] = $ac_rssi; }
