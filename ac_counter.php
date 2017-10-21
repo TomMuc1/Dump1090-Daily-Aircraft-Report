@@ -27,7 +27,7 @@ $user_set_array['test_mode'] = false;
 
 
 
-function func_harvesine($lat_from, $lon_from, $lat_to, $lon_to, $earth_radius) {
+function func_haversine($lat_from, $lon_from, $lat_to, $lon_to, $earth_radius) {
 	$delta_lat = deg2rad($lat_to - $lat_from);
 	$delta_lon = deg2rad($lon_to - $lon_from);
 	$a = sin($delta_lat / 2) * sin($delta_lat / 2) + cos(deg2rad($lat_from)) * cos(deg2rad($lat_to)) * sin($delta_lon / 2) * sin($delta_lon / 2);
@@ -123,7 +123,7 @@ while (true) {
 			else if ($ac_lon != '') { $csv_array[$ac_hex]['l_lon'] = $ac_lon; }
 			if (!isset($csv_array[$ac_hex]['l_alt']) && $ac_altitude == '') { $csv_array[$ac_hex]['l_alt'] = ''; }
 			else if ($ac_altitude != '') { $csv_array[$ac_hex]['l_alt'] = $ac_altitude; }
-			$ac_lat && $ac_lon ? $ac_dist = round(func_harvesine($rec_lat, $rec_lon, $ac_lat, $ac_lon, $earth_radius), 1) : $ac_dist = '';
+			$ac_lat && $ac_lon ? $ac_dist = round(func_haversine($rec_lat, $rec_lon, $ac_lat, $ac_lon, $earth_radius), 1) : $ac_dist = '';
 			if (!isset($csv_array[$ac_hex]['l_dist'])) { $csv_array[$ac_hex]['l_dist'] = $ac_dist; }
 			else if ($ac_dist != '' && $csv_array[$ac_hex]['l_dist'] > $ac_dist) { $csv_array[$ac_hex]['l_dist'] = $ac_dist; }
 			if (!isset($csv_array[$ac_hex]['h_dist'])) { $csv_array[$ac_hex]['h_dist'] = $ac_dist; }
