@@ -8,7 +8,7 @@
 $user_set_array['url_json'] = 'http://127.0.0.1/dump1090/data/aircraft.json';
 
 // set email and/or logfile option to true or false
-$user_set_array['email'] = 'true';    $user_set_array['log'] = 'true';
+$user_set_array['email'] = 'false';    $user_set_array['log'] = 'true';
 
 // set path to directory where log files to store to
 $user_set_array['log_directory'] = '/home/pi/ac_counter_log';
@@ -19,20 +19,23 @@ $user_set_array['email_address'] = 'YOUR_EMAIL@gmail.com';
 // set the absolute limit of alert-messages default is 500
 $user_set_array['mailer_limit'] = 500;
 
+// set only to true for script function test run -> will 3 times email/log after about 10/20/30 minutes
+$user_set_array['test_mode'] = false;
+
 $i = 0;
 $sent_messages = 0;
 $hex_array = array();
 $start_time = time();
 date_default_timezone_set('UTC');
 $seconds_of_day = time() - strtotime('today');
-$csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" . '"Category"' . "\t" . '"Squawk"' . "\t" . '"Set First"' . "\t" . '"First Seen"' . "\t" . '"First Latitude"' . "\t" . '"First Longitude"' . "\t" . '"First Altitude"' . "\t" . '"Set Last"'. "\t" . '"Last Seen"' . "\t" . '"Last Latitude"' . "\t" . '"Last Longitude"' . "\t" . '"Last Altitude"' . "\t" . '"Mlat"' . PHP_EOL . PHP_EOL;
+$csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" . '"Category"' . "\t" . '"Squawk"' . "\t" . '"First Seen"' . "\t" . '"First Latitude"' . "\t" . '"First Longitude"' . "\t" . '"First Altitude"' . "\t" . '"Last Seen"' . "\t" . '"Last Latitude"' . "\t" . '"Last Longitude"' . "\t" . '"Last Altitude"' . "\t" . '"Low Rssi"' . "\t" . '"High Rssi"' . "\t" . '"Mlat"' . PHP_EOL . PHP_EOL;
 
 while (true) {
 
 	$start_loop_microtime = microtime(true);
 
 	// at midnight generate csv-file and submit email and/or write log-file
-	if ($seconds_of_day > time() - strtotime('today')) {
+	if ($seconds_of_day > time() - strtotime('today') || ($user_set_array['test_mode'] && ($i == 600 || $i == 1200 || $i == 1800))) {
 		$csv = '';
 		$csv .= $csv_header;
 		foreach ($csv_array as $key => $value) {
@@ -58,11 +61,11 @@ while (true) {
 		}
 		if ($user_set_array['log'] == true) {
 			$file_to_write = gzencode($csv);
-			$file_name_to_write = $user_set_array['log_directory'] . '/' . 'ac_' . date('Y_m_d', time() - 86400) . '.xls.zip';
+			$file_name_to_write = $user_set_array['log_directory'] . '/' . 'ac_' . date('Y_m_d_i', time() - 86400) . '.xls.zip';
 			if (!file_exists($user_set_array['log_directory'])) mkdir($user_set_array['log_directory'], 0755, true);
 			file_put_contents($file_name_to_write, $file_to_write, LOCK_EX);
 		}
-		$csv_array = array();
+		if (!$user_set_array['test_mode']) $csv_array = array();
 		$sent_messages++;
 	}
 
@@ -80,6 +83,7 @@ while (true) {
 		isset($row['lat']) ? $ac_lat = $row['lat'] : $ac_lat = '';
 		isset($row['lon']) ? $ac_lon = $row['lon'] : $ac_lon = '';
 		isset($row['seen']) ? $ac_seen = $row['seen'] : $ac_seen = '';
+		isset($row['rssi']) ? $ac_rssi = $row['rssi'] : $ac_rssi = '';
 		isset($row['mlat']) ? $ac_mlat = implode(' ', $row['mlat']) : $ac_mlat = '';
 		if ($ac_hex != '' && $ac_hex != '000000' && ($ac_seen != '' && $ac_seen < 1.2)) {
 			$csv_array[$ac_hex]['hex'] = $ac_hex;
@@ -90,14 +94,10 @@ while (true) {
 			else if ($ac_category != '') { $csv_array[$ac_hex]['category'] = $ac_category; }
 			if (!isset($csv_array[$ac_hex]['squawk']) && $ac_squawk == '') { $csv_array[$ac_hex]['squawk'] = ''; }
 			else if ($ac_squawk != '') { $csv_array[$ac_hex]['squawk'] = $ac_squawk; }
-			if ((!isset($csv_array[$ac_hex]['f_see']) && !isset($csv_array[$ac_hex]['f_lat']) && !isset($csv_array[$ac_hex]['f_lon']) && !isset($csv_array[$ac_hex]['f_alt'])) && ($ac_now != '' && $ac_lat != '' && $ac_lon != '' && $ac_altitude != '')) { $csv_array[$ac_hex]['f_set'] = 'set'; }
-			else if (!isset($csv_array[$ac_hex]['f_set'])) { $csv_array[$ac_hex]['f_set'] = ''; }
 			if (!isset($csv_array[$ac_hex]['f_see']) || $csv_array[$ac_hex]['f_see'] == '') $csv_array[$ac_hex]['f_see'] = $ac_now;
 			if (!isset($csv_array[$ac_hex]['f_lat']) || $csv_array[$ac_hex]['f_lat'] == '') $csv_array[$ac_hex]['f_lat'] = $ac_lat;
 			if (!isset($csv_array[$ac_hex]['f_lon']) || $csv_array[$ac_hex]['f_lon'] == '') $csv_array[$ac_hex]['f_lon'] = $ac_lon;
 			if (!isset($csv_array[$ac_hex]['f_alt']) || $csv_array[$ac_hex]['f_alt'] == '') $csv_array[$ac_hex]['f_alt'] = $ac_altitude;
-			if ($ac_now != '' && $ac_lat != '' && $ac_lon != '' && $ac_altitude != '') { $csv_array[$ac_hex]['l_set'] = 'set'; }
-			else { $csv_array[$ac_hex]['l_set'] = ''; }
 			if (!isset($csv_array[$ac_hex]['l_see']) && $ac_now == '') { $csv_array[$ac_hex]['l_see'] = ''; }
 			else if ($ac_now != '') { $csv_array[$ac_hex]['l_see'] = $ac_now; }
 			if (!isset($csv_array[$ac_hex]['l_lat']) && $ac_lat == '') { $csv_array[$ac_hex]['l_lat'] = ''; }
@@ -106,6 +106,10 @@ while (true) {
 			else if ($ac_lon != '') { $csv_array[$ac_hex]['l_lon'] = $ac_lon; }
 			if (!isset($csv_array[$ac_hex]['l_alt']) && $ac_altitude == '') { $csv_array[$ac_hex]['l_alt'] = ''; }
 			else if ($ac_altitude != '') { $csv_array[$ac_hex]['l_alt'] = $ac_altitude; }
+			if (!isset($csv_array[$ac_hex]['l_rssi'])) { $csv_array[$ac_hex]['l_rssi'] = $ac_rssi; }
+			else if ($ac_rssi != '' && $csv_array[$ac_hex]['l_rssi'] > $ac_rssi) { $csv_array[$ac_hex]['l_rssi'] = $ac_rssi; }
+			if (!isset($csv_array[$ac_hex]['h_rssi'])) { $csv_array[$ac_hex]['h_rssi'] = $ac_rssi; }
+			else if ($ac_rssi != '' && $csv_array[$ac_hex]['h_rssi'] < $ac_rssi) { $csv_array[$ac_hex]['h_rssi'] = $ac_rssi; }
 			if (!isset($csv_array[$ac_hex]['mlat']) && $ac_mlat == '') { $csv_array[$ac_hex]['mlat'] = ''; }
 			else if ($ac_mlat != '') { $csv_array[$ac_hex]['mlat'] = 'mlat'; }
 			$last_run = time() - strtotime('today');
