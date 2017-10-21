@@ -124,9 +124,9 @@ while (true) {
 			if (!isset($csv_array[$ac_hex]['l_alt']) && $ac_altitude == '') { $csv_array[$ac_hex]['l_alt'] = ''; }
 			else if ($ac_altitude != '') { $csv_array[$ac_hex]['l_alt'] = $ac_altitude; }
 			$ac_lat && $ac_lon ? $ac_dist = round(func_haversine($rec_lat, $rec_lon, $ac_lat, $ac_lon, $earth_radius), 1) : $ac_dist = '';
-			if (!isset($csv_array[$ac_hex]['l_dist'])) { $csv_array[$ac_hex]['l_dist'] = $ac_dist; }
+			if (!isset($csv_array[$ac_hex]['l_dist']) || $csv_array[$ac_hex]['l_dist'] == '') { $csv_array[$ac_hex]['l_dist'] = $ac_dist; }
 			else if ($ac_dist != '' && $csv_array[$ac_hex]['l_dist'] > $ac_dist) { $csv_array[$ac_hex]['l_dist'] = $ac_dist; }
-			if (!isset($csv_array[$ac_hex]['h_dist'])) { $csv_array[$ac_hex]['h_dist'] = $ac_dist; }
+			if (!isset($csv_array[$ac_hex]['h_dist']) || $csv_array[$ac_hex]['h_dist'] == '') { $csv_array[$ac_hex]['h_dist'] = $ac_dist; }
 			else if ($ac_dist != '' && $csv_array[$ac_hex]['h_dist'] < $ac_dist) { $csv_array[$ac_hex]['h_dist'] = $ac_dist; }
 			if (!isset($csv_array[$ac_hex]['l_rssi'])) { $csv_array[$ac_hex]['l_rssi'] = $ac_rssi; }
 			else if ($ac_rssi != '' && $csv_array[$ac_hex]['l_rssi'] > $ac_rssi) { $csv_array[$ac_hex]['l_rssi'] = $ac_rssi; }
