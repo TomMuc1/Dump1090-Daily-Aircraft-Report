@@ -8,7 +8,7 @@
 $user_set_array['url_json'] = 'http://127.0.0.1/dump1090/data/';
 
 // set email and/or logfile option to true or false
-$user_set_array['email'] = 'false';    $user_set_array['log'] = 'true';
+$user_set_array['email'] = false;    $user_set_array['log'] = true;
 
 // set path to directory where log files to store to
 $user_set_array['log_directory'] = '/home/pi/ac_counter_log';
