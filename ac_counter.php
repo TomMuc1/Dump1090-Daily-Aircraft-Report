@@ -27,6 +27,7 @@ $user_set_array['test_mode'] = false;
 
 
 
+// function to compute distance between receiver and aircraft
 function func_haversine($lat_from, $lon_from, $lat_to, $lon_to, $earth_radius) {
 	$delta_lat = deg2rad($lat_to - $lat_from);
 	$delta_lon = deg2rad($lon_to - $lon_from);
@@ -42,9 +43,13 @@ $start_time = time();
 date_default_timezone_set('UTC');
 $seconds_of_day = time() - strtotime('today');
 $user_set_array['metric'] ? $earth_radius = 6371 : $earth_radius = 3440;
-$json_receiver_location = json_decode(file_get_contents($user_set_array['url_json'] . 'receiver.json'),true);
+
+// fetch receiver.json and read receiver latitude and longitude
+$json_receiver_location = json_decode(file_get_contents($user_set_array['url_json'] . 'receiver.json'), true);
 isset($json_receiver_location['lat']) ? $rec_lat = $json_receiver_location['lat'] : $rec_lat = 0;
 isset($json_receiver_location['lon']) ? $rec_lon = $json_receiver_location['lon'] : $rec_lon = 0;
+
+// set csv-file column header names
 $csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" . '"Category"' . "\t" . '"Squawk"' . "\t" . '"First Seen"' . "\t" . '"First Latitude"' . "\t" . '"First Longitude"' . "\t" . '"First Altitude"' . "\t" . '"Last Seen"' . "\t" . '"Last Latitude"' . "\t" . '"Last Longitude"' . "\t" . '"Last Altitude"' . "\t" . '"Low Dist"' . "\t" . '"High Dist"' . "\t" . '"Low Rssi"' . "\t" . '"High Rssi"' . "\t" . '"Mlat"' . PHP_EOL . PHP_EOL;
 
 while (true) {
