@@ -7,8 +7,9 @@
 // set path to aircraft.json file
 $user_set_array['url_json'] = 'http://127.0.0.1/dump1090/data/';
 
-// set email and/or logfile option to true or false
+// set email and/or logfile and/or database option to true or false
 $user_set_array['email'] = false;    $user_set_array['log'] = true;
+$user_set_array['database'] = false;
 
 // set path to directory where log files to store to
 $user_set_array['log_directory'] = '/home/pi/ac_counter_log';
@@ -22,8 +23,15 @@ $user_set_array['mailer_limit'] = 500;
 // set to true for units metric instead nautical
 $user_set_array['metric'] = false;
 
-// set only to true for script function test run -> will 3 times email/log after about 10/20/30 minutes
-$user_set_array['test_mode'] = false;
+// set parameters for database connection
+$user_set_array['db_user'] = 'root';    $user_set_array['db_pass'] = 'YOUR_PASSWORD';
+$user_set_array['db_name'] = 'adsb';    $user_set_array['db_host'] = '127.0.0.1';
+
+// set only to true for script function test run -> will 3 times email/log/db after about 1/2/3 minutes
+$user_set_array['test_mode'] = true;
+
+// below a sample create statement for database table
+// CREATE TABLE daily_report (id INT NOT NULL AUTO_INCREMENT, date VARCHAR(100), transponder VARCHAR(100), messages VARCHAR(100), flight VARCHAR(100), category VARCHAR(100), squawk VARCHAR(100), first_seen VARCHAR(100), first_latitude VARCHAR(100), first_longitude VARCHAR(100), first_altitude VARCHAR(100), last_seen VARCHAR(100), last_latitude VARCHAR(100), last_longitude VARCHAR(100), last_altitude VARCHAR(100), low_dist VARCHAR(100), high_dist VARCHAR(100), low_rssi VARCHAR(100), high_rssi VARCHAR(100), mlat VARCHAR(100), PRIMARY KEY (id))
 
 
 
@@ -54,10 +62,11 @@ $csv_header = '"Transponder"' . "\t" . '"Messages"' . "\t" . '"Flight"' . "\t" .
 
 while (true) {
 
+	$db_insert = '';
 	$start_loop_microtime = microtime(true);
 
 	// at midnight generate csv-file and submit email and/or write log-file
-	if ($seconds_of_day > time() - strtotime('today') || ($user_set_array['test_mode'] && ($i == 600 || $i == 1200 || $i == 1800))) {
+	if ($seconds_of_day > time() - strtotime('today') || ($user_set_array['test_mode'] && ($i == 60 || $i == 120 || $i == 180))) {
 		$csv = '';
 		$csv .= $csv_header;
 		foreach ($csv_array as $key => $value) {
@@ -86,6 +95,20 @@ while (true) {
 			$file_name_to_write = $user_set_array['log_directory'] . '/' . 'ac_' . date('Y_m_d_i', time() - 86400) . '.xls.zip';
 			if (!file_exists($user_set_array['log_directory'])) mkdir($user_set_array['log_directory'], 0755, true);
 			file_put_contents($file_name_to_write, $file_to_write, LOCK_EX);
+		}
+		if ($user_set_array['database'] == true) {
+			$sql = '';
+			foreach ($csv_array as $key => $value) {
+				$sql .= "INSERT INTO daily_report VALUES (NULL, '" . date('Ymd', time() - 86400) . "', '" . implode("', '", $value) . "');" . PHP_EOL;
+			}
+			try {
+				$db = new PDO('mysql:host=' . $user_set_array['db_host'] . ';dbname=' . $user_set_array['db_name'] . '', $user_set_array['db_user'], $user_set_array['db_pass']); $db_insert = '';
+				$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				if ($sql) { $db->exec($sql); $db_insert = 'inserted'; }
+				$db = null;
+			} catch (PDOException $db_error) {
+				$db_insert = PHP_EOL . $db_error->getMessage();
+			}
 		}
 		if (!$user_set_array['test_mode']) $csv_array = array();
 		$sent_messages++;
@@ -150,7 +173,7 @@ $runtime = (time() - $start_time);
 $runtime_formatted = sprintf('%d days %02d:%02d:%02d', $runtime/60/60/24,($runtime/60/60)%24,($runtime/60)%60,$runtime%60);
 ($runtime > 0) ? $loop_clock = number_format(round(($i / $runtime),6),6) : $loop_clock = number_format(1, 6);
 $process_microtime = (round(1000000 * (microtime(true) - $start_loop_microtime)));
-print('upt(us): ' . sprintf('%07d', $process_microtime) . ' - ' . $loop_clock . ' loops/s avg - since ' . $runtime_formatted . ' - run ' . $i . ' => ' . sprintf('%04d', count($csv_array)) . ' aircraft(s) @ ' . array_sum(array_column($csv_array, 'msg')) . ' msg today' . PHP_EOL);
+print('upt(us): ' . sprintf('%07d', $process_microtime) . ' - ' . $loop_clock . ' loops/s avg - since ' . $runtime_formatted . ' - run ' . $i . ' => ' . sprintf('%04d', count($csv_array)) . ' aircraft(s) @ ' . array_sum(array_column($csv_array, 'msg')) . ' msg today ' . $db_insert . PHP_EOL);
 sleep(1);
 $i++;
 
