@@ -28,7 +28,7 @@ $user_set_array['db_user'] = 'root';    $user_set_array['db_pass'] = 'YOUR_PASSW
 $user_set_array['db_name'] = 'adsb';    $user_set_array['db_host'] = '127.0.0.1';
 
 // set only to true for script function test run -> will 3 times email/log/db after about 1/2/3 minutes
-$user_set_array['test_mode'] = true;
+$user_set_array['test_mode'] = false;
 
 // below a sample create statement for database table
 // CREATE TABLE daily_report (id INT NOT NULL AUTO_INCREMENT, date VARCHAR(100), transponder VARCHAR(100), messages VARCHAR(100), flight VARCHAR(100), category VARCHAR(100), squawk VARCHAR(100), first_seen VARCHAR(100), first_latitude VARCHAR(100), first_longitude VARCHAR(100), first_altitude VARCHAR(100), last_seen VARCHAR(100), last_latitude VARCHAR(100), last_longitude VARCHAR(100), last_altitude VARCHAR(100), low_dist VARCHAR(100), high_dist VARCHAR(100), low_rssi VARCHAR(100), high_rssi VARCHAR(100), mlat VARCHAR(100), PRIMARY KEY (id))
