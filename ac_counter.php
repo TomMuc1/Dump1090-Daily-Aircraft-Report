@@ -188,14 +188,14 @@ while (true) {
 	$seconds_of_day = time() - strtotime('today');
 	#var_dump($csv_array);
 
-    // generate terminal output and set sleep timer to get minimum a full second until next aircraft.json is ready to get fetched
-    $runtime = (time() - $start_time);
-    $runtime_formatted = sprintf('%d days %02d:%02d:%02d', $runtime/60/60/24,($runtime/60/60)%24,($runtime/60)%60,$runtime%60);
-    ($runtime > 0) ? $loop_clock = number_format(round(($i / $runtime),6),6) : $loop_clock = number_format(1, 6);
-    $process_microtime = (round(1000000 * (microtime(true) - $start_loop_microtime)));
-    print('upt(us): ' . sprintf('%07d', $process_microtime) . ' - ' . $loop_clock . ' loops/s avg - since ' . $runtime_formatted . ' - run ' . $i . ' => ' . sprintf('%04d', count($csv_array)) . ' aircraft(s) @ ' . array_sum(array_column($csv_array, 'msg')) . ' msg today ' . $db_insert . PHP_EOL);
-    sleep(1);
-    $i++;
+// generate terminal output and set sleep timer to get minimum a full second until next aircraft.json is ready to get fetched
+$runtime = (time() - $start_time);
+$runtime_formatted = sprintf('%d days %02d:%02d:%02d', $runtime/60/60/24,($runtime/60/60)%24,($runtime/60)%60,$runtime%60);
+($runtime > 0) ? $loop_clock = number_format(round(($i / $runtime),6),6) : $loop_clock = number_format(1, 6);
+$process_microtime = (round(1000000 * (microtime(true) - $start_loop_microtime)));
+print('upt(us): ' . sprintf('%07d', $process_microtime) . ' - ' . $loop_clock . ' loops/s avg - since ' . $runtime_formatted . ' - run ' . $i . ' => ' . sprintf('%04d', count($csv_array)) . ' aircraft(s) @ ' . array_sum(array_column($csv_array, 'msg')) . ' msg today ' . $db_insert . PHP_EOL);
+sleep(1);
+$i++;
 
 }
 
