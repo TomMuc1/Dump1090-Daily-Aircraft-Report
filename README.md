@@ -1,10 +1,10 @@
-# Dump1090-Daily-Aircraft-Report
+### Dump1090-Daily-Aircraft-Report
 
 short script that daily reports aircrafts from dump1090 and sends auto-email every day.
 
 ![Alt text](screen.png?raw=true "Sample Report")
 
-**counts all unique aircrafts per UTC day and automatically sends you an email report** with number of aircrafts and all hex-codes along with number of messages, first and last seen position per aircraft/hex. no database needed, no sd-card writing needed. if you want more data you can additionally use this script: https://discussions.flightaware.com/t/dump1090-mysql-database-script-with-alert-and-filter-function/26619?u=tommuc
+**counts all unique aircrafts per UTC day and automatically sends you an email report** with number of aircrafts and all hex-codes along with number of messages, first and last seen position per aircraft/hex. no database needed, no sd-card writing needed.
 
 one line sample database output using an inner join to basestation.sqb:
 
