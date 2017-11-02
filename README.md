@@ -1,6 +1,6 @@
 ### Dump1090-Daily-Aircraft-Report
 
-**aggregates Dump1090 received messages to a daily report -> sends an email report and/or writes a log-file and/or writes to MySql databaser**
+Aggregates Dump1090 received messages to a daily report then sends an email report and/or writes a log-file and/or writes to MySql database
 
 ![Alt text](screen.png?raw=true "Sample Report")
 
@@ -20,10 +20,12 @@ or simply count all aircrafts/messages per day:
 	3617              6376172              20171025
 	3291              5900191              20171024
 	3233              5822322              20171023
+	
+***do the needed settings at top of ac_counter.php - then place the script in /home/pi/ and follow below instructions***
 
-**given raspbian jessie or stretch install with dump1090:**
+**starting with raspbian jessie or stretch install with dump1090:**
 
-	sudo apt-get update
+    sudo apt-get update
 
 	install sendmail (only needed for email option):
 	sudo apt-get install sendmail
@@ -33,8 +35,7 @@ or simply count all aircrafts/messages per day:
 
 	php install - raspbian stretch only:
 	sudo apt-get install php7.0-common php7.0-cgi php7.0-mysql php7.0-sqlite php7.0-curl php7.0
-	
-do the needed settings at top of ac_counter.php - then place the script in /home/pi/ and follow below instructions ...
+
 
 **setup script system service:**
 
