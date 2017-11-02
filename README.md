@@ -23,7 +23,7 @@ or simply count all aircrafts/messages per day:
 	
 **=> do the needed settings at top of ac_counter.php - then place the script e.g. in /home/pi/ and follow below instructions**
 
-**starting with raspbian jessie or stretch install with dump1090:**
+**starting with raspbian jessie or stretch install with dump1090-mutability:**
 
     sudo apt-get update
 
