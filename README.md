@@ -4,26 +4,71 @@ short script that daily reports aircrafts from dump1090 and sends auto-email eve
 
 ![Alt text](screen.png?raw=true "Sample Report")
 
-php-install - if not already installed:    
+**counts all unique aircrafts per UTC day and automatically sends you an email report** with number of aircrafts and all hex-codes along with number of messages, first and last seen position per aircraft/hex. no database needed, no sd-card writing needed. if you want more data you can additionally use this script: https://discussions.flightaware.com/t/dump1090-mysql-database-script-with-alert-and-filter-function/26619?u=tommuc
 
-given raspbian jessie or stretch install with dump1090
+one line sample database output using an inner join to basestation.sqb:
 
-sudo apt-get update
+    sql: select * from daily_report inner join basestation on daily_report.transponder = basestation.ModeS
 
-install sendmail:
+	id    report_date    transponder    messages    flight    category    squawk    first_seen                    first_latitude    first_longitude    first_altitude    last_seen                    last_latitude    last_longitude    last_altitude    low_dist    high_dist    low_rssi    high_rssi    mlat    AircraftID    ModeS    ModeSCountry    Country    Registration    Status    Manufacturer    ICAOTypeCode    Type    SerialNo    RegisteredOwners    OperatorFlagCode
+	1     20171022       4b19e8         478         SWR117G   A0          3024      2017-10-22 20:47:21 Sunday    47.468851         8.820261           13750             2017-10-22 21:02:03 Sunday   48.658447        9.533169          4525             74.2        102.5        -30.7       -9.6                 1282          4B19E8   Switzerland     HB         HB-JVC          A         Fokker          F100            F100    11501       Helvetic Airways    OAW
 
-sudo apt-get install sendmail
+or simply count all aircrafts/messages per day:
 
-php install - raspbian jessie only:
+	select count(report_date) as seen_aircrafts, sum(messages) as received_messages, report_date as count_date from daily_report group by report_date order by count_date desc
 
-sudo apt-get install php5-common php5-cgi php5-mysql php5-sqlite php5-curl php5
+	seen_aircrafts    received_messages    count_date
+	3705              6304047              20171026
+	3617              6376172              20171025
+	3291              5900191              20171024
+	3233              5822322              20171023
 
-php install - raspbian stretch only:
+**given raspbian jessie or stretch install with dump1090:**
 
-sudo apt-get install php7.0-common php7.0-cgi php7.0-mysql php7.0-sqlite php7.0-curl php7.0
+	sudo apt-get update
 
-setup crontab to auto-run script:
+	install sendmail (only needed for email option):
+	sudo apt-get install sendmail
 
-sudo crontab -e
+	php install - raspbian jessie only:
+	sudo apt-get install php5-common php5-cgi php5-mysql php5-sqlite php5-curl php5
 
-@reboot sleep 10 && /usr/bin/php /home/pi/ac_counter.php > /dev/null
+	php install - raspbian stretch only:
+	sudo apt-get install php7.0-common php7.0-cgi php7.0-mysql php7.0-sqlite php7.0-curl php7.0
+	
+do the needed settings at top of ac_counter.php - then place the script in /home/pi/ and follow below instructions ...
+
+**setup script system service:**
+
+    sudo chmod 755 /home/pi/ac_counter.php
+    sudo nano /etc/systemd/system/ac_counter.service
+
+-> in nano insert the following lines
+
+    [Unit]
+    Description=ac_counter.php
+    
+    [Service]
+    ExecStart=/home/pi/ac_counter.php
+    Restart=always
+    RestartSec=10
+    StandardOutput=null
+    StandardError=null
+    
+    [Install]
+    WantedBy=multi-user.target
+
+save and exit nano ctrl+x -> ctrl+y -> enter
+
+    sudo chmod 644 /etc/systemd/system/ac_counter.service
+    sudo systemctl enable ac_counter.service
+    sudo systemctl start ac_counter.service
+    sudo systemctl status ac_counter.service
+    
+**alternative but not reccomended you can run the script via cron:**
+
+	setup crontab to auto-run script:
+	sudo crontab -e
+	@reboot sleep 10 && /usr/bin/php /home/pi/ac_counter.php > /dev/null
+
+
