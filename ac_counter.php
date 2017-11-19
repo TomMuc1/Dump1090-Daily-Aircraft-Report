@@ -103,9 +103,9 @@ while (true) {
 			$body .= 'Content-Transfer-Encoding: 7bit' . PHP_EOL . PHP_EOL;
 			$body .= number_format(count($csv_array), 0, ',', '.') . ' Aircrafts @ ' . number_format(array_sum(array_column($csv_array, 'msg')), 0, ',', '.') . ' Messages - Yesterday UTC' . PHP_EOL . PHP_EOL;
 			$body .= '--' . $boundary . PHP_EOL;
-			$body .= 'Content-Type: application/octet-stream; name="aircrafts_' . date('Y_m_d', time() - 86400) . '.xls"' . PHP_EOL;
+			$body .= 'Content-Type: application/octet-stream; name="ac_' . date('Y_m_d', time() - 86400) . '.xls"' . PHP_EOL;
 			$body .= 'Content-Transfer-Encoding: base64' . PHP_EOL;
-			$body .= 'Content-Disposition: attachment; filename="aircrafts_' . date('Y_m_d', time() - 86400) . '.xls"' . PHP_EOL . PHP_EOL;
+			$body .= 'Content-Disposition: attachment; filename="ac_' . date('Y_m_d', time() - 86400) . '.xls"' . PHP_EOL . PHP_EOL;
 			$body .= chunk_split(base64_encode($csv)) . PHP_EOL . PHP_EOL;
 			$body .= '--' . $boundary . '--';
 			mail($user_set_array['email_address'], 'Daily Aircraft Stats', $body, $header);
