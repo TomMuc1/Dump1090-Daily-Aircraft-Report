@@ -54,7 +54,7 @@ $tmp_write_trigger = 0;
 $hex_array = array();
 $start_time = time();
 date_default_timezone_set('UTC');
-$seconds_of_day = time() - strtotime('today');
+$current_day = date('Ymd');
 $user_set_array['metric'] ? $earth_radius = 6371 : $earth_radius = 3440;
 
 // fetch receiver.json and read receiver latitude and longitude
@@ -86,9 +86,10 @@ while (true) {
 	$tmp_write_trigger++;
 
 	// at midnight generate csv-file and submit email and/or write log-file and/or database
-	if ($seconds_of_day > time() - strtotime('today') || ($user_set_array['test_mode'] && ($i == 60 || $i == 120 || $i == 180))) {
+	if ($current_day < date('Ymd') || ($user_set_array['test_mode'] && ($i == 60 || $i == 120 || $i == 180))) {
 		$csv = '';
 		$csv .= $csv_header;
+		$current_day = date('Ymd');
 		foreach ($csv_array as $key => $value) {
 			$csv .= "\"\t\0" . implode("\"\t\"", str_replace('.', ',', $value)) . "\"" . PHP_EOL;
 		}
@@ -185,7 +186,6 @@ while (true) {
 			$last_run = time() - strtotime('today');
 		}
 	}
-	$seconds_of_day = time() - strtotime('today');
 	#var_dump($csv_array);
 
 	// generate terminal output and set sleep timer to get minimum a full second until next aircraft.json is ready to get fetched
