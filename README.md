@@ -1,6 +1,6 @@
 ### Dump1090-Daily-Aircraft-Report
 
-Aggregates Dump1090 messages to a daily report then emails and/or writes log-file and/or writes to MySql database
+Aggregates Dump1090-mutability messages to a daily report then emails and/or writes log-file and/or writes to MySql database
 
 ![Alt text](screen.png?raw=true "Sample Report")
 
