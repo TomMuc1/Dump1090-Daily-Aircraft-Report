@@ -182,7 +182,7 @@ while (true) {
 			if (!isset($csv_array[$ac_hex]['h_rssi'])) { $csv_array[$ac_hex]['h_rssi'] = $ac_rssi; }
 			else if ($ac_rssi != '' && $csv_array[$ac_hex]['h_rssi'] < $ac_rssi) { $csv_array[$ac_hex]['h_rssi'] = $ac_rssi; }
 			if (!isset($csv_array[$ac_hex]['mlat']) && $ac_mlat == '') { $csv_array[$ac_hex]['mlat'] = ''; }
-			else if ($ac_mlat != '') { $csv_array[$ac_hex]['mlat'] = 'mlat'; }
+			else if ($ac_mlat != '') { $csv_array[$ac_hex]['mlat'] = '1'; }
 			$last_run = time() - strtotime('today');
 		}
 	}
