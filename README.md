@@ -70,4 +70,3 @@ save and exit nano ctrl+x -> ctrl+y -> enter
 	sudo crontab -e
 	@reboot sleep 10 && /usr/bin/php /home/pi/ac_counter.php > /dev/null
 
-
