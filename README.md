@@ -13,13 +13,13 @@ one line sample database output using an inner join to basestation.sqb:
 
 or simply count all aircrafts/messages per day:
 
-	select count(report_date) as seen_aircrafts, sum(messages) as received_messages, report_date as count_date from daily_report group by report_date order by count_date desc
+	select count(report_date) as seen_aircrafts_total, sum(mlat) as seen_aircrafts_mlat, sum(messages) as received_messages, report_date as count_date from daily_report group by report_date order by count_date desc
 
-	seen_aircrafts    received_messages    count_date
-	3705              6304047              20171026
-	3617              6376172              20171025
-	3291              5900191              20171024
-	3233              5822322              20171023
+	seen_aircrafts_total    seen_aircrafts_mlat    received_messages    count_date
+  2679                    432                    4007636              20171227
+  2478                    367                    3541436              20171226
+  1834                    250                    2370725              20171225
+  2258                    222                    3070003              20171224
 	
 **=> do the needed settings at top of ac_counter.php - then place the script e.g. in /home/pi/ and follow below instructions**
 
