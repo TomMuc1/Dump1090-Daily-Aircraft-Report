@@ -6,35 +6,35 @@ Aggregates Dump1090-mutability messages to a daily report then emails and/or wri
 
 one line sample database output using an inner join to basestation.sqb:
 
-    sql: select * from daily_report inner join basestation on daily_report.transponder = basestation.ModeS
+  sql: select * from daily_report inner join basestation on daily_report.transponder = basestation.ModeS
 
-	id    report_date    transponder    messages    flight    category    squawk    first_seen                    first_latitude    first_longitude    first_altitude    last_seen                    last_latitude    last_longitude    last_altitude    low_dist    high_dist    low_rssi    high_rssi    mlat    AircraftID    ModeS    ModeSCountry    Country    Registration    Status    Manufacturer    ICAOTypeCode    Type    SerialNo    RegisteredOwners    OperatorFlagCode
-	1     20171022       4b19e8         478         SWR117G   A0          3024      2017-10-22 20:47:21 Sunday    47.468851         8.820261           13750             2017-10-22 21:02:03 Sunday   48.658447        9.533169          4525             74.2        102.5        -30.7       -9.6                 1282          4B19E8   Switzerland     HB         HB-JVC          A         Fokker          F100            F100    11501       Helvetic Airways    OAW
+  id    report_date    transponder    messages    flight    category    squawk    first_seen                    first_latitude    first_longitude    first_altitude    last_seen                    last_latitude    last_longitude    last_altitude    low_dist    high_dist    low_rssi    high_rssi    mlat    AircraftID    ModeS    ModeSCountry    Country    Registration    Status    Manufacturer    ICAOTypeCode    Type    SerialNo    RegisteredOwners    OperatorFlagCode
+  1     20171022       4b19e8         478         SWR117G   A0          3024      2017-10-22 20:47:21 Sunday    47.468851         8.820261           13750             2017-10-22 21:02:03 Sunday   48.658447        9.533169          4525             74.2        102.5        -30.7       -9.6                 1282          4B19E8   Switzerland     HB         HB-JVC          A         Fokker          F100            F100    11501       Helvetic Airways    OAW
 
 or simply count all aircrafts/messages per day:
 
-	select count(report_date) as seen_aircrafts_total, sum(mlat) as seen_aircrafts_mlat, sum(messages) as received_messages, report_date as count_date from daily_report group by report_date order by count_date desc
+  select count(report_date) as seen_aircrafts_total, sum(mlat) as seen_aircrafts_mlat, sum(messages) as received_messages, report_date as count_date from daily_report group by report_date order by count_date desc
 
-	seen_aircrafts_total    seen_aircrafts_mlat    received_messages    count_date
+  seen_aircrafts_total    seen_aircrafts_mlat    received_messages    count_date
   2679                    432                    4007636              20171227
   2478                    367                    3541436              20171226
   1834                    250                    2370725              20171225
   2258                    222                    3070003              20171224
-	
+  
 **=> do the needed settings at top of ac_counter.php - then place the script e.g. in /home/pi/ and follow below instructions**
 
 **starting with raspbian jessie or stretch install with dump1090-mutability:**
 
-    sudo apt-get update
+  sudo apt-get update
 
-	install sendmail (only needed for email option):
-	sudo apt-get install sendmail
+  install sendmail (only needed for email option):
+  sudo apt-get install sendmail
 
-	php install - raspbian jessie only:
-	sudo apt-get install php5-common php5-cgi php5-mysql php5-sqlite php5-curl php5
+  php install - raspbian jessie only:
+  sudo apt-get install php5-common php5-cgi php5-mysql php5-sqlite php5-curl php5
 
-	php install - raspbian stretch only:
-	sudo apt-get install php7.0-common php7.0-cgi php7.0-mysql php7.0-sqlite php7.0-curl php7.0
+  php install - raspbian stretch only:
+  sudo apt-get install php7.0-common php7.0-cgi php7.0-mysql php7.0-sqlite php7.0-curl php7.0
 
 
 **setup script system service:**
@@ -66,7 +66,8 @@ save and exit nano ctrl+x -> ctrl+y -> enter
     
 **alternative but not reccomended you can run the script via cron:**
 
-	setup crontab to auto-run script:
-	sudo crontab -e
-	@reboot sleep 10 && /usr/bin/php /home/pi/ac_counter.php > /dev/null
+  setup crontab to auto-run script:
+  sudo crontab -e
+  @reboot sleep 10 && /usr/bin/php /home/pi/ac_counter.php > /dev/null
+
 
