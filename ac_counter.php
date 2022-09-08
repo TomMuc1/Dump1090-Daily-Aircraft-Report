@@ -146,6 +146,7 @@ while (true) {
 		isset($row['category']) ? $ac_category = $row['category'] : $ac_category = '';
 		isset($row['squawk']) ? $ac_squawk = $row['squawk'] : $ac_squawk = '';
 		isset($row['altitude']) ? $ac_altitude = $row['altitude'] : $ac_altitude = '';
+		isset($row['alt_baro']) ? $ac_altitude = $row['alt_baro'] : true;
 		isset($row['lat']) ? $ac_lat = $row['lat'] : $ac_lat = '';
 		isset($row['lon']) ? $ac_lon = $row['lon'] : $ac_lon = '';
 		isset($row['seen']) ? $ac_seen = $row['seen'] : $ac_seen = '';
